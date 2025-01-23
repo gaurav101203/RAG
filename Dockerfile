@@ -16,6 +16,12 @@ RUN apt-get update && apt-get install -y \
 # Set the path for GDAL
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
+# Install system-level dependencies
+RUN apt-get update && apt-get install -y \
+    libcairo2-dev \
+    pkg-config \
+    gcc \
+    && apt-get clean
 
 # Install pip requirements
 COPY requirements.txt .
