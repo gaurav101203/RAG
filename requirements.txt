@@ -13,7 +13,6 @@ antlr4-python3-runtime==4.9.3
 anyio==3.7.1
 argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
-array_record==0.6.0
 arviz==0.20.0
 astropy==6.1.7
 astropy-iers-data==0.2025.1.6.0.33.42
