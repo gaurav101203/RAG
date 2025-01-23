@@ -7,31 +7,31 @@ Original file is located at
     https://colab.research.google.com/drive/1L9N3oNkpwwthjpMyrw7npjDVBBbfY7jF
 """
 
-!pip install langchain_google_vertexai langchain_community langgraph nltk
+# !pip install langchain_google_vertexai langchain_community langgraph nltk
 
-!pip install --upgrade google-auth google-auth-oauthlib google-api-python-client google.cloud
+# !pip install --upgrade google-auth google-auth-oauthlib google-api-python-client google.cloud
 
-!gcloud auth login
+# !gcloud auth login
 
-!gcloud config set project rag-model-448019
+# !gcloud config set project rag-model-448019
 
-!gcloud projects add-iam-policy-binding rag-model-448019 \
-    --member="serviceAccount:rag-model@rag-model-448019.iam.gserviceaccount.com" \
-    --role="roles/aiplatform.user"
+# !gcloud projects add-iam-policy-binding rag-model-448019 \
+#     --member="serviceAccount:rag-model@rag-model-448019.iam.gserviceaccount.com" \
+#     --role="roles/aiplatform.user"
 
-!pip install unstructured unstructured[pdf] gradio
+# !pip install unstructured unstructured[pdf] gradio
 
 # Ensure your VertexAI credentials are configured
 import os
 import gradio as gr
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/content/rag-model-448019-7622d30ebd3b.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./rag-model-448019-7622d30ebd3b.json"
 
 
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 
 credentials = service_account.Credentials.from_service_account_file(
-    "/content/rag-model-448019-7622d30ebd3b.json",
+    "./rag-model-448019-7622d30ebd3b.json",
     scopes=["https://www.googleapis.com/auth/cloud-platform"]
 )
 credentials.refresh(Request())
