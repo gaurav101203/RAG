@@ -37,7 +37,7 @@ ENV PATH=$PATH:/usr/lib/R/bin
 # Install pip requirements
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir langchain_google_vertexai langchain_community langgraph nltk google-auth google-auth-oauthlib google-api-python-client google.cloud unstructured unstructured[pdf] gradio
 
 
 WORKDIR /app
