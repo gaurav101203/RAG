@@ -73,7 +73,7 @@ import shutil
 import time
 
 # Define the directory to save uploaded files
-UPLOAD_DIRECTORY = "/content/"
+UPLOAD_DIRECTORY = "./"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 def save_file(file):
@@ -84,7 +84,7 @@ def save_file(file):
         target_path = os.path.join(UPLOAD_DIRECTORY, base_filename)
         # Copy the file to the target directory
         shutil.copy(file.name, target_path)
-        DATA_PATH = "/content/"
+        DATA_PATH = "./"
         # # Load and chunk contents of the documents
         loader = DirectoryLoader(
             DATA_PATH, glob="*.pdf"
