@@ -2,20 +2,20 @@
 
 # !pip install --upgrade google-auth google-auth-oauthlib google-api-python-client google.cloud
 
-# !gcloud auth login
+# !pip install unstructured unstructured[pdf] gradio
 
-# !gcloud config set project project-ID
+# !gcloud auth login          # Log In with your google cloud account
+
+# !gcloud config set project project-ID         # Enter your project ID where Vertex AI API is enabled and have all the permissions
 
 # !gcloud projects add-iam-policy-binding project-ID \
 #     --member="serviceAccount:Service account email" \
 #     --role="roles/aiplatform.user"
 
-# !pip install unstructured unstructured[pdf] gradio
-
 # Ensure your VertexAI credentials are configured
 import os
 import gradio as gr
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./GOOGLE_APPLICATION_CREDENTIALS.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./GOOGLE_APPLICATION_CREDENTIALS.json"  #Upload your Google Cloud Service account(.json) key 
 
 
 from google.oauth2 import service_account
@@ -35,16 +35,15 @@ vertexai.init(
     credentials=credentials # Replace with your preferred region
 )
 
+# Choose the response generating model according to you
 from langchain_google_vertexai import ChatVertexAI
-
 llm = ChatVertexAI(model="gemini-1.5-pro-001")
 
+# Choose the Embedding model according to you
 from langchain_google_vertexai import VertexAIEmbeddings
-
 embeddings = VertexAIEmbeddings(model="text-embedding-005")
 
 from langchain_core.vectorstores import InMemoryVectorStore
-
 vector_store = InMemoryVectorStore(embeddings)
 
 import nltk
@@ -66,16 +65,14 @@ import shutil
 UPLOAD_DIRECTORY = "./"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
+# Save the file and then process it
 def save_file(file):
     try:
-        # Extract the base file name
         base_filename = os.path.basename(file.name)
-        # Define the target file path
-        target_path = os.path.join(UPLOAD_DIRECTORY, base_filename)
-        # Copy the file to the target directory
+        target_path = os.path.join(UPLOAD_DIRECTORY, base_filename)    # Define the target file path
         shutil.copy(file.name, target_path)
         DATA_PATH = "./"
-        # # Load and chunk contents of the documents
+        # Load and chunk contents of the documents
         loader = DirectoryLoader(
             DATA_PATH, glob="*.pdf"
         )
@@ -83,12 +80,11 @@ def save_file(file):
 
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         all_splits = text_splitter.split_documents(docs)
-
-# Index chunks
         _ = vector_store.add_documents(documents=all_splits)
         return f"File saved successfully"
     except Exception as e:
         return f"Error saving file: {str(e)}"
+        
 # Define prompt for question-answering
 prompt = hub.pull("rlm/rag-prompt")
 
@@ -99,7 +95,6 @@ class State(TypedDict):
     context: List[Document]
     answer: str
 
-# Define application steps
 def retrieve(state: State):
     retrieved_docs = vector_store.similarity_search(state["question"])
     return {"context": retrieved_docs}
@@ -111,16 +106,16 @@ def generate(state: State):
     response = llm.invoke(messages)
     return {"answer": response.content}
 
-# Compile application and test
+# Compile the above application and test
 graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
 
+# Define the Interface for Question-Answering
 def chatbot_interface(question):
     try:
         response = graph.invoke({"question": question})
         answer = response.get("answer", "No answer found.")
-
         return answer
     except Exception as e:
         return f"Error: {e}", None
